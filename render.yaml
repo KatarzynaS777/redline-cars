@@ -1,0 +1,30 @@
+databases:
+  - name: car-project-db
+    plan: free
+    databaseName: car_project
+    user: car_project_user
+
+services:
+  - type: web
+    name: redline-cars
+    runtime: python
+    plan: free
+    buildCommand: "bash build.sh"
+    startCommand: "gunicorn car_project.wsgi:application --bind 0.0.0.0:$PORT --workers ${WEB_CONCURRENCY:-2}"
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: car-project-db
+          property: connectionString
+      - key: EMAIL_LINKS_IN_RESPONSE
+        value: true
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        sync: false
+      - key: WEB_CONCURRENCY
+        value: 2

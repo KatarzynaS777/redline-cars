@@ -1,0 +1,1038 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="{% static 'cars/favicons/favicon.ico' %}?v=3">
+<link rel="shortcut icon" type="image/x-icon" href="{% static 'cars/favicons/favicon.ico' %}?v=3">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'cars/favicons/favicon-32x32.png' %}?v=3">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'cars/favicons/favicon-16x16.png' %}?v=3">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'cars/favicons/apple-touch-icon.png' %}?v=3">
+<link rel="manifest" href="{% static 'cars/favicons/site.webmanifest' %}?v=3">
+<title>RedLine Cars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #111111;
+    --panel: rgba(22, 22, 22, 0.88);
+    --panel-soft: rgba(255, 255, 255, 0.08);
+    --panel-glass: rgba(24, 24, 24, 0.74);
+    --border: rgba(255, 255, 255, 0.12);
+    --text: #f4f4f4;
+    --muted: rgba(255, 255, 255, 0.82);
+    --accent: #d10000;
+    --accent-dark: #8e0000;
+    --shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    font-family: "Rajdhani", Arial, sans-serif;
+    background:
+        radial-gradient(circle at top right, rgba(209, 0, 0, 0.20), transparent 28%),
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 24%),
+        linear-gradient(180deg, #242424 0%, #171717 48%, #0b0b0b 100%);
+}
+
+body.drawer-open {
+    overflow: hidden;
+}
+
+a,
+button,
+input {
+    font-family: "Rajdhani", Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+}
+
+.drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.52);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.24s ease, visibility 0.24s ease;
+    z-index: 30;
+}
+
+body.drawer-open .drawer-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+.side-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(340px, calc(100vw - 24px));
+    height: 100vh;
+    padding: 28px 22px;
+    background:
+        linear-gradient(180deg, rgba(10, 10, 10, 0.98), rgba(22, 8, 8, 0.98)),
+        url("{% static 'cars/compare-hero-bg.png' %}") center/cover no-repeat;
+    background-blend-mode: multiply;
+    border-right: 1px solid rgba(255, 255, 255, 0.10);
+    transform: translateX(-102%);
+    transition: transform 0.26s ease;
+    z-index: 40;
+    overflow-y: auto;
+}
+
+body.drawer-open .side-drawer {
+    transform: translateX(0);
+}
+
+.drawer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.drawer-brand {
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.drawer-close {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.drawer-copy {
+    margin: 0 0 20px;
+    font-size: 18px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.76);
+}
+
+.drawer-section {
+    margin-bottom: 20px;
+}
+
+.drawer-title {
+    margin: 0 0 10px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.48);
+}
+
+.drawer-links {
+    display: grid;
+    gap: 10px;
+}
+
+.drawer-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 16px;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.drawer-link:hover {
+    transform: translateX(4px);
+    background: rgba(209, 0, 0, 0.12);
+    border-color: rgba(209, 0, 0, 0.34);
+}
+
+.drawer-link span:last-child {
+    color: rgba(255, 255, 255, 0.48);
+    font-family: "Orbitron", Arial, sans-serif;
+}
+
+.page-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 26px;
+    background: rgba(14, 14, 14, 0.82);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.topbar-left,
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.menu-toggle {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.07);
+    cursor: pointer;
+}
+
+.menu-toggle span {
+    width: 20px;
+    height: 2px;
+    border-radius: 999px;
+    background: white;
+}
+
+.brand-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.brand-mark {
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: clamp(20px, 2vw, 34px);
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
+
+.brand-subtitle {
+    font-size: 12px;
+    letter-spacing: 0.30em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.46);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    color: white;
+    background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+    box-shadow: 0 16px 34px rgba(209, 0, 0, 0.22);
+}
+
+.btn-secondary {
+    color: white;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.profile-link {
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    text-decoration: none;
+    color: white;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.hero-shell {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.82fr) minmax(420px, 1.18fr);
+    gap: 22px;
+    padding: 28px 26px 24px;
+    align-items: stretch;
+}
+
+.hero-shell-guest {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(18px, 4vw, 58px);
+    min-height: calc(100vh - 109px);
+    padding: clamp(28px, 5vw, 72px);
+    border-radius: 0;
+    overflow: hidden;
+    background: #101010;
+    border: 0;
+    box-shadow: none;
+    isolation: isolate;
+}
+
+.hero-shell-guest::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(5, 5, 5, 0.78) 0%, rgba(8, 8, 8, 0.46) 44%, rgba(9, 3, 3, 0.72) 100%),
+        url("{% static 'cars/compare-hero-bg.png' %}") center/cover no-repeat;
+    opacity: 1;
+    z-index: -2;
+}
+
+.hero-shell-guest::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 18% 16%, rgba(209, 0, 0, 0.22), transparent 28%),
+        linear-gradient(180deg, rgba(12, 12, 12, 0.04), rgba(3, 3, 3, 0.58));
+    z-index: -1;
+}
+
+.hero-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+    padding: 28px;
+    border-radius: 30px;
+    background: linear-gradient(180deg, rgba(22, 22, 22, 0.92), rgba(16, 16, 16, 0.80));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.hero-panel-guest {
+    position: relative;
+    z-index: 1;
+    align-items: flex-start;
+    text-align: left;
+    width: min(100%, 620px);
+    padding: 28px 30px;
+    background:
+        linear-gradient(145deg, rgba(35, 35, 35, 0.88), rgba(15, 15, 15, 0.82)),
+        radial-gradient(circle at top right, rgba(209, 0, 0, 0.16), transparent 34%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
+    box-shadow:
+        0 26px 64px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.30);
+    transform: perspective(1100px) rotateY(-2deg);
+}
+
+.hero-panel-guest::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: linear-gradient(125deg, rgba(255, 255, 255, 0.10), transparent 38%);
+    pointer-events: none;
+}
+
+.hero-shell-guest .visual-panel {
+    display: none;
+}
+
+.eyebrow {
+    display: inline-flex;
+    width: fit-content;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(209, 0, 0, 0.14);
+    color: #ffb6b6;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.hero-title {
+    margin: 0;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: clamp(28px, 2.9vw, 42px);
+    line-height: 1.06;
+    text-transform: uppercase;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
+}
+
+.hero-text {
+    max-width: 560px;
+    margin: 0;
+    font-size: 19px;
+    line-height: 1.45;
+    color: var(--muted);
+}
+
+.hero-panel-guest .hero-title {
+    max-width: 560px;
+    font-size: clamp(30px, 3.1vw, 44px);
+    line-height: 1.05;
+}
+
+.hero-panel-guest .hero-text {
+    max-width: 540px;
+    font-size: 19px;
+    color: rgba(255, 255, 255, 0.90);
+}
+
+.hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.hero-panel:not(.hero-panel-guest) .hero-actions {
+    margin-top: 4px;
+}
+
+.hero-panel-guest .hero-actions {
+    justify-content: flex-start;
+}
+
+.hero-note {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.70);
+}
+
+.guest-benefits {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+    margin-top: 0;
+}
+
+.guest-benefit {
+    padding: 12px 13px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.14);
+}
+
+.guest-benefit:nth-child(3) {
+    display: none;
+}
+
+.guest-benefit strong {
+    display: block;
+    margin-bottom: 8px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.guest-benefit span {
+    display: block;
+    font-size: 14px;
+    line-height: 1.42;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.reviews-panel {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 360px);
+    padding: 22px;
+    border-radius: 26px;
+    background:
+        linear-gradient(160deg, rgba(31, 31, 31, 0.78), rgba(13, 13, 13, 0.72)),
+        radial-gradient(circle at top left, rgba(209, 0, 0, 0.16), transparent 36%);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    box-shadow: 0 24px 58px rgba(0, 0, 0, 0.30);
+    backdrop-filter: blur(8px);
+}
+
+.reviews-kicker {
+    display: inline-flex;
+    margin-bottom: 12px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(209, 0, 0, 0.13);
+    color: #ffb6b6;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.reviews-panel h2 {
+    margin: 0 0 16px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 22px;
+    line-height: 1.15;
+    text-transform: uppercase;
+}
+
+.reviews-window {
+    height: 232px;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.reviews-track {
+    display: grid;
+    gap: 12px;
+    animation: reviews-scroll 18s linear infinite;
+}
+
+.reviews-panel:hover .reviews-track {
+    animation-play-state: paused;
+}
+
+.review-card {
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.review-card p {
+    margin: 0 0 10px;
+    font-size: 16px;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.86);
+}
+
+.review-card span {
+    display: block;
+    color: rgba(255, 255, 255, 0.58);
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+}
+
+@keyframes reviews-scroll {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(calc(-50% - 6px));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reviews-track {
+        animation: none;
+    }
+}
+
+.visual-panel {
+    position: relative;
+    min-height: 450px;
+    border-radius: 30px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: var(--shadow);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.22)),
+        url("{% static 'cars/compare-hero-bg.png' %}") center/cover no-repeat;
+}
+
+.visual-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(7, 7, 7, 0.02), rgba(7, 7, 7, 0.34)),
+        linear-gradient(90deg, rgba(7, 7, 7, 0.02), rgba(7, 7, 7, 0.16));
+}
+
+.visual-card {
+    position: absolute;
+    right: 22px;
+    left: auto;
+    width: min(420px, calc(100% - 44px));
+    bottom: 22px;
+    z-index: 1;
+    padding: 18px 20px;
+    border-radius: 22px;
+    background: rgba(18, 18, 18, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(10px);
+}
+
+.visual-card h2 {
+    margin: 0 0 10px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 17px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: white;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.categories-shell {
+    padding: 0 26px 34px;
+}
+
+.categories-panel {
+    padding: 22px;
+    border-radius: 28px;
+    background: linear-gradient(180deg, rgba(22, 22, 22, 0.92), rgba(15, 15, 15, 0.80));
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: var(--shadow);
+}
+
+.section-title {
+    margin: 0 0 18px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: clamp(22px, 2.6vw, 32px);
+    text-transform: uppercase;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.category-card {
+    display: block;
+    min-height: 132px;
+    padding: 18px;
+    border-radius: 22px;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(209, 0, 0, 0.34);
+    background: rgba(209, 0, 0, 0.08);
+}
+
+.hero-panel:not(.hero-panel-guest) + .visual-panel {
+    min-height: 420px;
+}
+
+.hero-panel:not(.hero-panel-guest) + .visual-panel .visual-card {
+    width: min(360px, calc(100% - 44px));
+}
+
+.category-code {
+    display: inline-block;
+    margin-bottom: 14px;
+    color: #ffb6b6;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.category-name {
+    margin: 0 0 8px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 21px;
+    text-transform: uppercase;
+}
+
+.category-card p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+@media (max-width: 1180px) {
+    .hero-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-shell-guest {
+        min-height: auto;
+        flex-direction: column;
+    }
+
+    .visual-panel {
+        min-height: 420px;
+    }
+
+    .guest-benefits {
+        grid-template-columns: 1fr;
+    }
+
+    .reviews-panel {
+        width: min(100%, 620px);
+    }
+
+    .category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 860px) {
+    .topbar {
+        padding: 18px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .topbar-right {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .hero-shell {
+        padding: 20px 18px 22px;
+    }
+
+    .hero-shell-guest {
+        padding: 26px 18px 24px;
+    }
+
+    .categories-shell {
+        padding: 0 18px 24px;
+    }
+
+    .hero-panel,
+    .categories-panel {
+        padding: 24px;
+    }
+
+    .hero-panel-guest {
+        padding: 30px 22px;
+        transform: none;
+    }
+
+    .hero-title {
+        font-size: clamp(30px, 9vw, 48px);
+    }
+
+    .hero-text {
+        font-size: 20px;
+    }
+
+    .hero-panel-guest .hero-title {
+        font-size: clamp(30px, 9vw, 44px);
+    }
+
+    .hero-panel-guest .hero-text {
+        font-size: 19px;
+    }
+
+    .guest-benefit span {
+        font-size: 16px;
+    }
+
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .btn {
+        width: 100%;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+    }
+
+    .brand-mark {
+        letter-spacing: 0.16em;
+    }
+}
+</style>
+</head>
+<body>
+{% if user.is_authenticated %}
+<div class="drawer-overlay" onclick="closeDrawer()"></div>
+
+<aside class="side-drawer" id="sideDrawer" aria-hidden="true">
+    <div class="drawer-top">
+        <div class="drawer-brand">RedLine Cars</div>
+        <button type="button" class="drawer-close" onclick="closeDrawer()" aria-label="Zamknij menu">x</button>
+    </div>
+
+    <p class="drawer-copy">
+        Szybkie przejscia do katalogu i najwazniejszych kategorii.
+    </p>
+
+    <section class="drawer-section">
+        <h2 class="drawer-title">Katalog</h2>
+        <div class="drawer-links">
+            <a class="drawer-link" href="{% url 'car_list' %}"><span>Pelny katalog</span><span>-></span></a>
+            <a class="drawer-link" href="{% url 'add_car' %}"><span>Dodaj swoje auto</span><span>+</span></a>
+            <a class="drawer-link" href="{% url 'compare' %}"><span>Porownanie aut</span><span>-></span></a>
+        </div>
+    </section>
+
+    <section class="drawer-section">
+        <h2 class="drawer-title">Kategorie</h2>
+        <div class="drawer-links">
+            <a class="drawer-link" href="{% url 'car_list' %}?fuel=electric"><span>Elektryczne</span><span>EV</span></a>
+            <a class="drawer-link" href="{% url 'car_list' %}?fuel=hybrid"><span>Hybrydy</span><span>HY</span></a>
+            <a class="drawer-link" href="{% url 'car_list' %}?drive=AWD"><span>4x4 / AWD</span><span>AWD</span></a>
+            <a class="drawer-link" href="{% url 'car_list' %}?segment=SUV"><span>SUV</span><span>SUV</span></a>
+        </div>
+    </section>
+
+    <section class="drawer-section">
+        <h2 class="drawer-title">Konto</h2>
+        <div class="drawer-links">
+            <a class="drawer-link" href="{% url 'profile' %}"><span>Moj profil</span><span>ME</span></a>
+            <a class="drawer-link" href="{% url 'logout' %}"><span>Wyloguj</span><span>-></span></a>
+        </div>
+    </section>
+</aside>
+{% endif %}
+
+<div class="page-shell">
+    <header class="topbar">
+        <div class="topbar-left">
+            {% if user.is_authenticated %}
+            <button type="button" class="menu-toggle" onclick="toggleDrawer()" aria-label="Otworz menu kategorii" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            {% endif %}
+            <div class="brand-block">
+                <div class="brand-mark">RedLine Cars</div>
+                <div class="brand-subtitle">Performance Selection</div>
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            {% if user.is_authenticated %}
+            <a class="profile-link" href="{% url 'profile' %}" aria-label="Moj profil">{{ user.username|first|upper }}</a>
+            <a class="btn btn-secondary" href="{% url 'car_list' %}">Przejdz do katalogu</a>
+            <a class="btn btn-primary" href="{% url 'logout' %}">Wyloguj</a>
+            {% else %}
+            <a class="btn btn-secondary" href="{% url 'register' %}">Zarejestruj sie</a>
+            <a class="btn btn-primary" href="{% url 'login' %}">Zaloguj sie</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="{% if user.is_authenticated %}hero-shell{% else %}hero-shell hero-shell-guest{% endif %}">
+        <section class="{% if user.is_authenticated %}hero-panel{% else %}hero-panel hero-panel-guest{% endif %}">
+            {% if user.is_authenticated %}
+            <div class="eyebrow">RedLine Garage</div>
+            <h1 class="hero-title">Wroc do RedLine i porownaj auta szybciej.</h1>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="{% url 'car_list' %}">Otworz katalog aut</a>
+                <a class="btn btn-secondary" href="{% url 'add_car' %}">Dodaj swoje auto</a>
+            </div>
+            {% else %}
+            <div class="eyebrow">RedLine Access</div>
+            <h1 class="hero-title">Wejdz do RedLine Cars.</h1>
+            <p class="hero-text">
+                Zaloguj sie albo zaloz konto i przejdz do katalogu aut,
+                porownywarki oraz swojego wlasnego garazu.
+            </p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="{% url 'login' %}">Zaloguj sie</a>
+                <a class="btn btn-secondary" href="{% url 'register' %}">Zarejestruj sie</a>
+            </div>
+            <div class="guest-benefits">
+                <div class="guest-benefit">
+                    <strong>Szybki start</strong>
+                    <span>Logujesz sie i od razu przechodzisz do panelu.</span>
+                </div>
+                <div class="guest-benefit">
+                    <strong>Wlasny garaz</strong>
+                    <span>Dodajesz auta i budujesz swoja kolekcje.</span>
+                </div>
+                <div class="guest-benefit">
+                    <strong>Porownywarka</strong>
+                    <span>Sprawdzasz modele obok siebie bez chaosu.</span>
+                </div>
+            </div>
+            <p class="hero-note">RedLine Cars laczy katalog, profil i porownywarke w jednym dopracowanym miejscu.</p>
+            {% endif %}
+        </section>
+
+        {% if not user.is_authenticated %}
+        <section class="reviews-panel" aria-label="Opinie uzytkownikow">
+            <span class="reviews-kicker">Opinie</span>
+            <h2>Co mowia uzytkownicy</h2>
+            <div class="reviews-window">
+                <div class="reviews-track">
+                    <article class="review-card">
+                        <p>"W koncu mam auta, porownania i ulubione modele w jednym miejscu."</p>
+                        <span>Maja, katalog aut</span>
+                    </article>
+                    <article class="review-card">
+                        <p>"Panel wyglada czysto, a dodawanie samochodu jest szybkie i proste."</p>
+                        <span>Kamil, wlasny garaz</span>
+                    </article>
+                    <article class="review-card">
+                        <p>"Najbardziej podoba mi sie porownywarka. Od razu widac roznice."</p>
+                        <span>Ola, porownanie modeli</span>
+                    </article>
+                    <article class="review-card" aria-hidden="true">
+                        <p>"W koncu mam auta, porownania i ulubione modele w jednym miejscu."</p>
+                        <span>Maja, katalog aut</span>
+                    </article>
+                    <article class="review-card" aria-hidden="true">
+                        <p>"Panel wyglada czysto, a dodawanie samochodu jest szybkie i proste."</p>
+                        <span>Kamil, wlasny garaz</span>
+                    </article>
+                    <article class="review-card" aria-hidden="true">
+                        <p>"Najbardziej podoba mi sie porownywarka. Od razu widac roznice."</p>
+                        <span>Ola, porownanie modeli</span>
+                    </article>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <section class="visual-panel" aria-label="Hero image RedLine Cars">
+            <div class="visual-card">
+                {% if user.is_authenticated %}
+                <h2>Popularne porownania</h2>
+                <div class="chip-row">
+                    <a class="chip" href="{% url 'car_list' %}?fuel=electric">Elektryczne</a>
+                    <a class="chip" href="{% url 'car_list' %}?fuel=hybrid">Hybrydy</a>
+                    <a class="chip" href="{% url 'car_list' %}?drive=AWD">AWD</a>
+                    <a class="chip" href="{% url 'car_list' %}?segment=SUV">SUV</a>
+                </div>
+                {% else %}
+                <h2>Start w RedLine</h2>
+                <div class="chip-row">
+                    <span class="chip">Wlasny panel</span>
+                    <span class="chip">Porownywarka</span>
+                    <span class="chip">Katalog aut</span>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    {% if user.is_authenticated %}
+    <section class="categories-shell">
+        <div class="categories-panel">
+            <h2 class="section-title">Glowne kategorie</h2>
+            <div class="category-grid">
+                <a class="category-card" href="{% url 'car_list' %}?fuel=electric">
+                    <span class="category-code">EV</span>
+                    <h3 class="category-name">Elektryczne</h3>
+                    <p>Nowoczesne modele gotowe do szybkiego wejscia w katalog.</p>
+                </a>
+
+                <a class="category-card" href="{% url 'car_list' %}?fuel=hybrid">
+                    <span class="category-code">HY</span>
+                    <h3 class="category-name">Hybrydy</h3>
+                    <p>Wygodny balans miedzy codzienna jazda a ekonomia.</p>
+                </a>
+
+                <a class="category-card" href="{% url 'car_list' %}?drive=AWD">
+                    <span class="category-code">AWD</span>
+                    <h3 class="category-name">4x4 / AWD</h3>
+                    <p>Lepsza trakcja i pewniejsze prowadzenie w trudniejszych warunkach.</p>
+                </a>
+
+                <a class="category-card" href="{% url 'car_list' %}?segment=SUV">
+                    <span class="category-code">SUV</span>
+                    <h3 class="category-name">Segment SUV</h3>
+                    <p>Popularne nadwozie z szybkim przejsciem do odpowiedniego segmentu.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</div>
+
+{% if user.is_authenticated %}
+<script>
+const drawer = document.getElementById("sideDrawer");
+const menuButton = document.querySelector(".menu-toggle");
+
+function openDrawer() {
+    document.body.classList.add("drawer-open");
+    drawer.setAttribute("aria-hidden", "false");
+    menuButton.setAttribute("aria-expanded", "true");
+}
+
+function closeDrawer() {
+    document.body.classList.remove("drawer-open");
+    drawer.setAttribute("aria-hidden", "true");
+    menuButton.setAttribute("aria-expanded", "false");
+}
+
+function toggleDrawer() {
+    if (document.body.classList.contains("drawer-open")) {
+        closeDrawer();
+        return;
+    }
+    openDrawer();
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        closeDrawer();
+    }
+});
+</script>
+{% endif %}
+</body>
+</html>

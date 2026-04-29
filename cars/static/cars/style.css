@@ -1,0 +1,251 @@
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0a0a0a;
+    color: white;
+}
+
+/* 🔥 TOPBAR */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 40px;
+    background: linear-gradient(270deg, red, black, red);
+    background-size: 600% 600%;
+    animation: gradientMove 6s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* LOGO */
+.logo img {
+    height: 80px;
+}
+
+/* SEARCH */
+.search-box {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.search-box input {
+    width: 380px;
+    padding: 14px 25px;
+    border-radius: 40px;
+    border: 2px solid black;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    outline: none;
+    transition: 0.3s;
+}
+
+.search-box input:hover,
+.search-box input:focus {
+    border: 2px solid red;
+    box-shadow: 0 0 15px red;
+}
+
+
+.menu-toggle {
+    width: 30px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.menu-toggle span {
+    height: 3px;
+    background: black;
+    border-radius: 2px;
+    display: block;
+}
+
+/* PANEL BOCZNY */
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 300px;
+    height: 100%;
+    background: #111;
+    color: white;
+    padding: 20px;
+    transition: 0.3s;
+    z-index: 999;
+}
+
+.side-menu.active {
+    left: 0;
+}
+
+.side-menu h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.side-menu a {
+    display: block;
+    padding: 8px 0;
+    color: #ccc;
+    text-decoration: none;
+}
+
+.side-menu a:hover {
+    color: red;
+}
+
+/* IKONY */
+.icons {
+    display: flex;
+    gap: 25px;
+}
+
+.icon {
+    width: 28px;
+    height: 28px;
+    fill: none;
+    stroke: black;
+    stroke-width: 2;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.icon:hover {
+    stroke: red;
+    transform: scale(1.2);
+}
+
+.hero-section {
+    width: 100%;
+    height: 450px;
+
+    background: url("/static/cars/hero.jpg") no-repeat center;
+    background-size: contain;   /* 🔥 KLUCZOWE – pokazuje całe zdjęcie */
+
+    background-color: black;    /* 🔥 tło po bokach */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: relative;
+}
+
+/* 🔥 LEKKIE przyciemnienie (już nie za mocne) */
+
+.hero-section {
+    width: 100%;
+    height: 860px;
+
+    background: url("/static/cars/hero.jpg") no-repeat center;
+    background-size: cover;   /* 🔥 wypełnia całą szerokość */
+
+    position: relative;
+}
+/* 🔥 TEKST */
+.hero-text {
+    position: relative;
+    z-index: 2;
+
+    font-size: 55px;
+    font-weight: bold;
+    text-align: center;
+
+    background: linear-gradient(90deg, red, white, red);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    animation: glow 1.5s infinite alternate;
+}
+
+/* animacja */
+@keyframes glow {
+    0% {opacity: 0.7; text-shadow: 0 0 10px red;}
+    100% {opacity: 1; text-shadow: 0 0 30px red;}
+}
+
+/* 🔥 KATEGORIE */
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+}
+
+.categories a {
+    padding: 10px 20px;
+    background: #111;
+    border: 1px solid red;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: 0.3s;
+    box-shadow: 0 5px 0 darkred;
+}
+
+.categories a:hover {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 darkred;
+    background: red;
+}
+
+/* 🔥 KARTY */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    background: #111;
+    border: 1px solid #222;
+    padding: 20px;
+    margin: 15px;
+    width: 250px;
+    border-radius: 15px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    border: 1px solid red;
+}
+
+/* BUTTON */
+.compare-btn {
+    display: block;
+    margin: 30px auto;
+    padding: 15px 40px;
+    background: red;
+    border: none;
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+}
+
+.compare-btn:hover {
+    background: darkred;
+}
+
+/* 🔥 FIX MENU */
+.top-bar {
+    position: fixed;
+    z-index: 5000;
+}
+
+.menu-toggle {
+    position: relative;
+    z-index: 6000;
+}
+
+.side-menu {
+    z-index: 7000;
+}

@@ -1,0 +1,12 @@
+Cześć {{ username }},
+
+witamy w RedLine Cars.
+To automatyczne zaproszenie do katalogu aut.
+
+Aktywuj konto klikając w link:
+{{ activation_url }}
+
+Po aktywacji zalogujesz się adresem e-mail i hasłem podanym przy rejestracji.
+
+RedLine Cars
+{{ home_url }}

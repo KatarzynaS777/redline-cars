@@ -1,0 +1,9 @@
+Czesc {{ username }},
+
+kliknij ten jednorazowy link, aby zalogowac sie do RedLine Cars:
+{{ login_url }}
+
+Link wygasa po okolo {{ expire_minutes }} minutach.
+
+RedLine Cars
+{{ home_url }}

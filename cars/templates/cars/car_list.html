@@ -1,0 +1,1339 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="{% static 'cars/favicons/favicon.ico' %}?v=3">
+<link rel="shortcut icon" type="image/x-icon" href="{% static 'cars/favicons/favicon.ico' %}?v=3">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'cars/favicons/favicon-32x32.png' %}?v=3">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'cars/favicons/favicon-16x16.png' %}?v=3">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'cars/favicons/apple-touch-icon.png' %}?v=3">
+<link rel="manifest" href="{% static 'cars/favicons/site.webmanifest' %}?v=3">
+<title>Katalog | RedLine Cars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #111111;
+    --panel: rgba(22, 22, 22, 0.88);
+    --panel-soft: rgba(255, 255, 255, 0.08);
+    --panel-glass: rgba(24, 24, 24, 0.74);
+    --border: rgba(255, 255, 255, 0.12);
+    --text: #f4f4f4;
+    --muted: rgba(255, 255, 255, 0.82);
+    --accent: #d10000;
+    --accent-dark: #8e0000;
+    --shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    font-family: "Rajdhani", Arial, sans-serif;
+    background:
+        radial-gradient(circle at top right, rgba(209, 0, 0, 0.20), transparent 28%),
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 24%),
+        linear-gradient(180deg, #242424 0%, #171717 48%, #0b0b0b 100%);
+}
+
+body.drawer-open {
+    overflow: hidden;
+}
+
+a,
+button,
+input,
+select {
+    font-family: "Rajdhani", Arial, sans-serif;
+}
+
+a {
+    color: inherit;
+}
+
+.drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.52);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.24s ease, visibility 0.24s ease;
+    z-index: 30;
+}
+
+body.drawer-open .drawer-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+.side-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(340px, calc(100vw - 24px));
+    height: 100vh;
+    padding: 28px 22px;
+    background:
+        linear-gradient(180deg, rgba(10, 10, 10, 0.98), rgba(22, 8, 8, 0.98)),
+        url("{% static 'cars/login-bg.jpg' %}") center/cover no-repeat;
+    background-blend-mode: multiply;
+    border-right: 1px solid rgba(255, 255, 255, 0.10);
+    transform: translateX(-102%);
+    transition: transform 0.26s ease;
+    z-index: 40;
+    overflow-y: auto;
+}
+
+body.drawer-open .side-drawer {
+    transform: translateX(0);
+}
+
+.drawer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.drawer-brand {
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.drawer-close {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.drawer-copy {
+    margin: 0 0 20px;
+    font-size: 18px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.76);
+}
+
+.drawer-section {
+    margin-bottom: 20px;
+}
+
+.drawer-title {
+    margin: 0 0 10px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.48);
+}
+
+.drawer-links {
+    display: grid;
+    gap: 10px;
+}
+
+.drawer-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 16px;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.drawer-link:hover {
+    transform: translateX(4px);
+    background: rgba(209, 0, 0, 0.12);
+    border-color: rgba(209, 0, 0, 0.34);
+}
+
+.drawer-link span:last-child {
+    color: rgba(255, 255, 255, 0.48);
+    font-family: "Orbitron", Arial, sans-serif;
+}
+
+.page-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 26px;
+    background: rgba(14, 14, 14, 0.82);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.topbar-left,
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.brand-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.menu-toggle {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.07);
+    cursor: pointer;
+}
+
+.menu-toggle span {
+    width: 20px;
+    height: 2px;
+    border-radius: 999px;
+    background: white;
+}
+
+.brand-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.brand-mark {
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: clamp(20px, 2vw, 34px);
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
+
+.brand-subtitle {
+    font-size: 12px;
+    letter-spacing: 0.30em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.46);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    color: white;
+    background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+    box-shadow: 0 16px 34px rgba(209, 0, 0, 0.22);
+    border: none;
+}
+
+.btn-secondary {
+    color: white;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.favorites-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 0 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: white;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.profile-link {
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    text-decoration: none;
+    color: white;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.favorites-link.active {
+    background: rgba(209, 0, 0, 0.16);
+    border-color: rgba(209, 0, 0, 0.30);
+}
+
+.heart-icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.hero-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 0.95fr);
+    gap: 28px;
+    padding: 32px 26px 24px;
+    align-items: stretch;
+}
+
+.hero-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+    padding: 34px;
+    border-radius: 30px;
+    background: linear-gradient(180deg, rgba(22, 22, 22, 0.92), rgba(16, 16, 16, 0.80));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.eyebrow {
+    display: inline-flex;
+    width: fit-content;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(209, 0, 0, 0.14);
+    color: #ffb6b6;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.hero-title {
+    margin: 0;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: clamp(34px, 4.2vw, 60px);
+    line-height: 1.04;
+    text-transform: uppercase;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.22);
+}
+
+.hero-text {
+    max-width: 620px;
+    margin: 0;
+    font-size: 21px;
+    line-height: 1.45;
+    color: var(--muted);
+}
+
+.hero-search {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    max-width: 620px;
+}
+
+.hero-search input {
+    min-height: 52px;
+    padding: 0 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.07);
+    color: white;
+    font-size: 18px;
+}
+
+.hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.meta-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    color: rgba(255, 255, 255, 0.84);
+    font-size: 17px;
+}
+
+.visual-panel {
+    position: relative;
+    min-height: 520px;
+    border-radius: 30px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: var(--shadow);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.20)),
+        url("{% static 'cars/hero-1.jpg' %}") center/cover no-repeat;
+}
+
+.visual-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(7, 7, 7, 0.02), rgba(7, 7, 7, 0.28)),
+        linear-gradient(90deg, rgba(7, 7, 7, 0.06), rgba(7, 7, 7, 0.18));
+}
+
+.visual-card {
+    position: absolute;
+    right: 22px;
+    left: 22px;
+    bottom: 22px;
+    z-index: 1;
+    padding: 18px 20px;
+    border-radius: 22px;
+    background: rgba(22, 22, 22, 0.76);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(10px);
+}
+
+.visual-card h2 {
+    margin: 0 0 10px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: white;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.filters-shell,
+.catalog-shell {
+    padding: 0 26px 24px;
+}
+
+.filters-panel,
+.catalog-panel {
+    padding: 24px;
+    border-radius: 28px;
+    background: linear-gradient(180deg, rgba(22, 22, 22, 0.92), rgba(15, 15, 15, 0.80));
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: var(--shadow);
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.filter-group h2 {
+    margin: 0 0 14px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.filter-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 600;
+    color: white;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-link:hover,
+.filter-link.active {
+    background: rgba(209, 0, 0, 0.16);
+    border-color: rgba(209, 0, 0, 0.34);
+}
+
+.advanced-filters {
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.advanced-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.advanced-title {
+    margin: 0 0 4px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.advanced-copy {
+    margin: 0;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.76);
+}
+
+.advanced-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.field {
+    display: grid;
+    gap: 8px;
+}
+
+.field label {
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.68);
+}
+
+.field input,
+.field select {
+    min-height: 46px;
+    width: 100%;
+    padding: 0 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.06);
+    color: white;
+    font-size: 17px;
+}
+
+.field input::placeholder {
+    color: rgba(255, 255, 255, 0.36);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.btn-reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.catalog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.catalog-title {
+    margin: 0 0 6px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: clamp(24px, 3vw, 36px);
+    text-transform: uppercase;
+}
+
+.catalog-subtitle {
+    margin: 0;
+    font-size: 19px;
+    color: rgba(255, 255, 255, 0.68);
+}
+
+.compare-button {
+    display: inline-flex;
+}
+
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.car-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    border-radius: 24px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.car-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(209, 0, 0, 0.34);
+}
+
+.car-visual {
+    position: relative;
+    min-height: 210px;
+    padding: 18px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.car-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(6, 6, 6, 0.00), rgba(6, 6, 6, 0.52));
+}
+
+.car-badge-row {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 10px;
+}
+
+.car-badge,
+.car-year {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(18, 18, 18, 0.66);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.favorite-form {
+    position: relative;
+    z-index: 1;
+}
+
+.favorite-button {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(18, 18, 18, 0.66);
+    color: white;
+    cursor: pointer;
+}
+
+.favorite-button.active {
+    color: #ff8f8f;
+    background: rgba(209, 0, 0, 0.20);
+    border-color: rgba(209, 0, 0, 0.34);
+}
+
+.car-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+}
+
+.car-topline {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 12px;
+}
+
+.car-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.car-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.84);
+}
+
+.car-name {
+    margin: 0;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 24px;
+    line-height: 1.15;
+    text-transform: uppercase;
+}
+
+.car-price {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffbcbc;
+}
+
+.spec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.spec {
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.spec-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.48);
+}
+
+.spec-value {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.compare-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 4px;
+}
+
+.equipment-section {
+    display: grid;
+    gap: 10px;
+}
+
+.equipment-heading {
+    margin: 0;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.58);
+}
+
+.equipment-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.equipment-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(209, 0, 0, 0.10);
+    border: 1px solid rgba(209, 0, 0, 0.24);
+    color: #ffd9d9;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.compare-label {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.74);
+}
+
+.compare-check {
+    width: 22px;
+    height: 22px;
+    accent-color: #d10000;
+}
+
+.empty-state {
+    padding: 26px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 20px;
+}
+
+@media (max-width: 1180px) {
+    .hero-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .catalog-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .advanced-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 860px) {
+    .topbar {
+        padding: 18px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .topbar-right {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .hero-shell,
+    .filters-shell,
+    .catalog-shell {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .hero-panel,
+    .filters-panel,
+    .catalog-panel {
+        padding: 22px;
+    }
+
+    .hero-title {
+        font-size: clamp(30px, 9vw, 46px);
+    }
+
+    .hero-text {
+        font-size: 19px;
+    }
+
+    .hero-search {
+        grid-template-columns: 1fr;
+    }
+
+    .catalog-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .catalog-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .advanced-header {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .advanced-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .btn {
+        width: 100%;
+    }
+
+    .topbar-right {
+        width: 100%;
+    }
+
+    .spec-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+<body>
+<div class="drawer-overlay" onclick="closeDrawer()"></div>
+
+<aside class="side-drawer" id="sideDrawer" aria-hidden="true">
+    <div class="drawer-top">
+        <div class="drawer-brand">RedLine Cars</div>
+        <button type="button" class="drawer-close" onclick="closeDrawer()" aria-label="Zamknij menu">x</button>
+    </div>
+
+    <p class="drawer-copy">
+        Przejdz szybko do katalogu, porownania i gotowych kategorii filtrowania.
+    </p>
+
+    <section class="drawer-section">
+        <h2 class="drawer-title">Nawigacja</h2>
+        <div class="drawer-links">
+            <a class="drawer-link" href="{% url 'home' %}"><span>Strona glowna</span><span>-></span></a>
+            <a class="drawer-link" href="{% url 'profile' %}"><span>Mój profil</span><span>ME</span></a>
+            <a class="drawer-link" href="{% url 'add_car' %}"><span>Dodaj swoje auto</span><span>+</span></a>
+            <a class="drawer-link" href="{% url 'compare' %}"><span>Porownanie aut</span><span>-></span></a>
+            <a class="drawer-link" href="{% url 'favorites' %}"><span>Ulubione</span><span>{{ favorites_count }}</span></a>
+        </div>
+    </section>
+
+    <section class="drawer-section">
+        <h2 class="drawer-title">Paliwo</h2>
+        <div class="drawer-links">
+            <a class="drawer-link" href="{% url 'car_list' %}?fuel=electric"><span>Elektryczne</span><span>EV</span></a>
+            <a class="drawer-link" href="{% url 'car_list' %}?fuel=hybrid"><span>Hybrydy</span><span>HY</span></a>
+            <a class="drawer-link" href="{% url 'car_list' %}?fuel=petrol"><span>Benzyna</span><span>PB</span></a>
+            <a class="drawer-link" href="{% url 'car_list' %}?fuel=diesel"><span>Diesel</span><span>ON</span></a>
+        </div>
+    </section>
+
+    <section class="drawer-section">
+        <h2 class="drawer-title">Napęd i segment</h2>
+        <div class="drawer-links">
+            <a class="drawer-link" href="{% url 'car_list' %}?drive=AWD"><span>4x4 / AWD</span><span>AWD</span></a>
+            <a class="drawer-link" href="{% url 'car_list' %}?drive=RWD"><span>Tylny naped</span><span>RWD</span></a>
+            <a class="drawer-link" href="{% url 'car_list' %}?segment=SUV"><span>Segment SUV</span><span>SUV</span></a>
+            <a class="drawer-link" href="{% url 'car_list' %}?segment=D"><span>Premium</span><span>D</span></a>
+        </div>
+    </section>
+</aside>
+
+<div class="page-shell">
+    <header class="topbar">
+        <div class="topbar-left">
+            <button type="button" class="menu-toggle" onclick="toggleDrawer()" aria-label="Otworz menu katalogu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <a class="brand-link" href="{% url 'home' %}">
+                <div class="brand-block">
+                    <div class="brand-mark">RedLine Cars</div>
+                    <div class="brand-subtitle">Performance Selection</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="topbar-right">
+            <a class="profile-link" href="{% url 'profile' %}" aria-label="Mój profil">{{ user.username|first|upper }}</a>
+            <a class="favorites-link {% if favorites_only %}active{% endif %}" href="{% url 'favorites' %}">
+                <svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 21s-6-4.35-9-8.28C-1 7 3 2 7.5 5.09C9 6.09 12 9 12 9s3-2.91 4.5-3.91C21 2 25 7 21 12.72C18 16.65 12 21 12 21z"/>
+                </svg>
+                <span>Ulubione {{ favorites_count }}</span>
+            </a>
+            <a class="btn btn-primary" href="{% url 'logout' %}">Wyloguj</a>
+        </div>
+    </header>
+
+    <main class="hero-shell">
+        <section class="hero-panel">
+            <div class="eyebrow">{% if favorites_only %}RedLine Favorites{% else %}RedLine Catalog{% endif %}</div>
+            <h1 class="hero-title">{% if favorites_only %}Twoje ulubione auta w jednym miejscu.{% else %}Odkryj modele, ktore robia roznice na drodze.{% endif %}</h1>
+            <p class="hero-text">
+                {% if favorites_only %}
+                Masz tutaj zapisane modele, do ktorych chcesz wracac. Dalej mozesz je filtrowac i porownywac.
+                {% else %}
+                Przesiej katalog po marce, napedzie, segmencie i mocy.
+                Znajdz auto, ktore najlepiej pasuje do Twojego stylu jazdy.
+                {% endif %}
+            </p>
+
+            <form method="get" class="hero-search">
+                <input type="text" name="q" value="{{ query }}" placeholder="Szukaj po marce lub modelu">
+                {% if selected_fuel %}<input type="hidden" name="fuel" value="{{ selected_fuel }}">{% endif %}
+                {% if selected_drive %}<input type="hidden" name="drive" value="{{ selected_drive }}">{% endif %}
+                {% if selected_segment %}<input type="hidden" name="segment" value="{{ selected_segment }}">{% endif %}
+                <button class="btn btn-primary" type="submit">Szukaj</button>
+            </form>
+
+            <div class="hero-meta">
+                <span class="meta-pill">Wynikow: {{ cars_count }}</span>
+                <span class="meta-pill">Ulubione: {{ favorites_count }}</span>
+                {% if selected_fuel %}<span class="meta-pill">Paliwo: {{ selected_fuel }}</span>{% endif %}
+                {% if selected_drive %}<span class="meta-pill">Napęd: {{ selected_drive }}</span>{% endif %}
+                {% if selected_segment %}<span class="meta-pill">Segment: {{ selected_segment }}</span>{% endif %}
+                {% if query %}<span class="meta-pill">Fraza: {{ query }}</span>{% endif %}
+            </div>
+        </section>
+
+        <section class="visual-panel" aria-label="Katalog RedLine Cars">
+            <div class="visual-card">
+                <h2>{% if favorites_only %}Twoje skroty{% else %}Szybkie wejscia{% endif %}</h2>
+                <div class="chip-row">
+                    <a class="chip" href="{% url 'car_list' %}?fuel=electric">Elektryczne</a>
+                    <a class="chip" href="{% url 'car_list' %}?fuel=hybrid">Hybrydy</a>
+                    <a class="chip" href="{% url 'car_list' %}?drive=AWD">AWD</a>
+                    <a class="chip" href="{% url 'car_list' %}?segment=SUV">SUV</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <section class="filters-shell">
+        <div class="filters-panel">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <h2>Paliwo</h2>
+                    <div class="filter-links">
+                        <a class="filter-link {% if not selected_fuel %}active{% endif %}" href="{% url 'car_list' %}">Wszystkie</a>
+                        <a class="filter-link {% if selected_fuel == 'electric' %}active{% endif %}" href="{% url 'car_list' %}?fuel=electric">Elektryczne</a>
+                        <a class="filter-link {% if selected_fuel == 'hybrid' %}active{% endif %}" href="{% url 'car_list' %}?fuel=hybrid">Hybrydy</a>
+                        <a class="filter-link {% if selected_fuel == 'petrol' %}active{% endif %}" href="{% url 'car_list' %}?fuel=petrol">Benzyna</a>
+                        <a class="filter-link {% if selected_fuel == 'diesel' %}active{% endif %}" href="{% url 'car_list' %}?fuel=diesel">Diesel</a>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h2>Napęd</h2>
+                    <div class="filter-links">
+                        <a class="filter-link {% if selected_drive == 'FWD' %}active{% endif %}" href="{% url 'car_list' %}?drive=FWD">FWD</a>
+                        <a class="filter-link {% if selected_drive == 'RWD' %}active{% endif %}" href="{% url 'car_list' %}?drive=RWD">RWD</a>
+                        <a class="filter-link {% if selected_drive == 'AWD' %}active{% endif %}" href="{% url 'car_list' %}?drive=AWD">AWD</a>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h2>Segment</h2>
+                    <div class="filter-links">
+                        <a class="filter-link {% if selected_segment == 'A' %}active{% endif %}" href="{% url 'car_list' %}?segment=A">Miejskie</a>
+                        <a class="filter-link {% if selected_segment == 'C' %}active{% endif %}" href="{% url 'car_list' %}?segment=C">Średnie</a>
+                        <a class="filter-link {% if selected_segment == 'D' %}active{% endif %}" href="{% url 'car_list' %}?segment=D">Premium</a>
+                        <a class="filter-link {% if selected_segment == 'SUV' %}active{% endif %}" href="{% url 'car_list' %}?segment=SUV">SUV</a>
+                    </div>
+                </div>
+            </div>
+
+            <form method="get" class="advanced-filters">
+                <div class="advanced-header">
+                    <div>
+                        <h2 class="advanced-title">Filtry zaawansowane</h2>
+                        <p class="advanced-copy">Polacz kilka warunkow naraz i sortuj wyniki tak, jak potrzebujesz.</p>
+                    </div>
+                </div>
+
+                <div class="advanced-grid">
+                    <div class="field">
+                        <label for="q">Fraza</label>
+                        <input id="q" type="text" name="q" value="{{ query }}" placeholder="Marka, model, nadwozie">
+                    </div>
+
+                    <div class="field">
+                        <label for="brand">Marka</label>
+                        <select id="brand" name="brand">
+                            <option value="">Wszystkie marki</option>
+                            {% for brand in brand_options %}
+                            <option value="{{ brand }}" {% if selected_brand == brand %}selected{% endif %}>{{ brand }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="fuel">Paliwo</label>
+                        <select id="fuel" name="fuel">
+                            <option value="">Dowolne paliwo</option>
+                            {% for value, label in fuel_options %}
+                            <option value="{{ value }}" {% if selected_fuel == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="drive">Napęd</label>
+                        <select id="drive" name="drive">
+                            <option value="">Dowolny naped</option>
+                            {% for value, label in drive_options %}
+                            <option value="{{ value }}" {% if selected_drive == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="segment">Segment</label>
+                        <select id="segment" name="segment">
+                            <option value="">Dowolny segment</option>
+                            {% for value, label in segment_options %}
+                            <option value="{{ value }}" {% if selected_segment == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="body_type">Nadwozie</label>
+                        <select id="body_type" name="body_type">
+                            <option value="">Dowolne nadwozie</option>
+                            {% for value, label in body_type_options %}
+                            <option value="{{ value }}" {% if selected_body_type == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="gearbox">Skrzynia</label>
+                        <select id="gearbox" name="gearbox">
+                            <option value="">Dowolna skrzynia</option>
+                            {% for gearbox in gearbox_options %}
+                            <option value="{{ gearbox }}" {% if selected_gearbox == gearbox %}selected{% endif %}>{{ gearbox|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="sort">Sortowanie</label>
+                        <select id="sort" name="sort">
+                            <option value="">Domyslne</option>
+                            {% for value, label in sort_options %}
+                            <option value="{{ value }}" {% if selected_sort == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="min_price">Cena od</label>
+                        <input id="min_price" type="number" name="min_price" value="{{ min_price|default_if_none:'' }}" placeholder="np. 50000" min="0" step="1000">
+                    </div>
+
+                    <div class="field">
+                        <label for="max_price">Cena do</label>
+                        <input id="max_price" type="number" name="max_price" value="{{ max_price|default_if_none:'' }}" placeholder="np. 200000" min="0" step="1000">
+                    </div>
+
+                    <div class="field">
+                        <label for="min_power">Moc od</label>
+                        <input id="min_power" type="number" name="min_power" value="{{ min_power|default_if_none:'' }}" placeholder="np. 150" min="0" step="10">
+                    </div>
+
+                    <div class="field">
+                        <label for="year_from">Rocznik od</label>
+                        <input id="year_from" type="number" name="year_from" value="{{ year_from|default_if_none:'' }}" placeholder="np. 2018" min="1900" step="1">
+                    </div>
+
+                    <div class="field">
+                        <label for="year_to">Rocznik do</label>
+                        <input id="year_to" type="number" name="year_to" value="{{ year_to|default_if_none:'' }}" placeholder="np. 2025" min="1900" step="1">
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn btn-primary" type="submit">Zastosuj filtry</button>
+                    <a class="btn-reset" href="{% url 'car_list' %}">Wyczysc wszystko</a>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="catalog-shell">
+        <div class="catalog-panel">
+            <form id="compareForm" method="post" action="{% url 'compare' %}">
+                {% csrf_token %}
+            </form>
+            <div class="catalog-header">
+                <div>
+                    <h2 class="catalog-title">{% if favorites_only %}Ulubione samochody{% else %}Katalog samochodow{% endif %}</h2>
+                    <p class="catalog-subtitle">Zaznacz dwa modele i przejdz do porownania.</p>
+                </div>
+                <button class="btn btn-primary compare-button" type="submit" form="compareForm">Porownaj wybrane auta</button>
+            </div>
+
+            {% if cars %}
+            <div class="catalog-grid">
+                {% for car in cars %}
+                <article class="car-card">
+                    <div class="car-visual" style="background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.10), rgba(0, 0, 0, 0.42)), url('{{ car.display_image_url }}');">
+                        <div class="car-badge-row">
+                            <span class="car-badge">{{ car.get_fuel_type_display }}</span>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span class="car-year">{{ car.year }}</span>
+                                <form method="post" action="{% url 'toggle_favorite' car.id %}" class="favorite-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <button class="favorite-button {% if car.id in favorite_ids %}active{% endif %}" type="submit" aria-label="Dodaj do ulubionych">
+                                        <svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="M12 21s-6-4.35-9-8.28C-1 7 3 2 7.5 5.09C9 6.09 12 9 12 9s3-2.91 4.5-3.91C21 2 25 7 21 12.72C18 16.65 12 21 12 21z"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="car-content">
+                        <div>
+                            <div class="car-topline">
+                                <h3 class="car-name">{{ car.brand }} {{ car.model }}</h3>
+                                <div class="car-tags">
+                                    <span class="car-tag">{{ car.get_body_type_display }}</span>
+                                    <span class="car-tag">{{ car.get_segment_display }}</span>
+                                </div>
+                            </div>
+                            <p class="car-price">{{ car.price }} zl</p>
+                        </div>
+
+                        <div class="spec-grid">
+                            <div class="spec">
+                                <span class="spec-label">Moc</span>
+                                <span class="spec-value">{{ car.power }} KM</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Napęd</span>
+                                <span class="spec-value">{{ car.get_drive_display }}</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Segment</span>
+                                <span class="spec-value">{{ car.get_segment_display }}</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Nadwozie</span>
+                                <span class="spec-value">{{ car.get_body_type_display }}</span>
+                            </div>
+                        </div>
+
+                        {% if car.featured_equipment_labels %}
+                        <div class="equipment-section">
+                            <h4 class="equipment-heading">Wyposażenie</h4>
+                            <div class="equipment-list">
+                                {% for item in car.featured_equipment_labels %}
+                                <span class="equipment-pill">{{ item }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="compare-field">
+                            <label class="compare-label" for="car-{{ car.id }}">Dodaj do porownania</label>
+                            <input class="compare-check" id="car-{{ car.id }}" type="checkbox" name="cars" value="{{ car.id }}" form="compareForm">
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                {% if favorites_only %}
+                Nie masz jeszcze ulubionych aut. Kliknij serduszko na karcie modelu, aby dodac je do tej sekcji.
+                {% else %}
+                Nie znaleziono aut dla wybranych filtrow. Sprobuj zmienic kategorie albo wyszukiwanie.
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+<script>
+const drawer = document.getElementById("sideDrawer");
+const menuButton = document.querySelector(".menu-toggle");
+
+function openDrawer() {
+    document.body.classList.add("drawer-open");
+    drawer.setAttribute("aria-hidden", "false");
+    menuButton.setAttribute("aria-expanded", "true");
+}
+
+function closeDrawer() {
+    document.body.classList.remove("drawer-open");
+    drawer.setAttribute("aria-hidden", "true");
+    menuButton.setAttribute("aria-expanded", "false");
+}
+
+function toggleDrawer() {
+    if (document.body.classList.contains("drawer-open")) {
+        closeDrawer();
+        return;
+    }
+    openDrawer();
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        closeDrawer();
+    }
+});
+</script>
+</body>
+</html>

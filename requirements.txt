@@ -1,0 +1,7 @@
+Django==6.0.3
+dj-database-url
+django-anymail
+gunicorn
+Pillow
+psycopg[binary]
+whitenoise

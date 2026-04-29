@@ -1,0 +1,750 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="{% static 'cars/favicons/favicon.ico' %}?v=3">
+<link rel="shortcut icon" type="image/x-icon" href="{% static 'cars/favicons/favicon.ico' %}?v=3">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'cars/favicons/favicon-32x32.png' %}?v=3">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'cars/favicons/favicon-16x16.png' %}?v=3">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'cars/favicons/apple-touch-icon.png' %}?v=3">
+<link rel="manifest" href="{% static 'cars/favicons/site.webmanifest' %}?v=3">
+<title>Porownanie aut | RedLine Cars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #0f0f0f;
+    --panel: rgba(20, 20, 20, 0.90);
+    --panel-soft: rgba(255, 255, 255, 0.07);
+    --border: rgba(255, 255, 255, 0.10);
+    --text: #f4f4f4;
+    --muted: rgba(255, 255, 255, 0.76);
+    --accent: #d10000;
+    --accent-dark: #8d0000;
+    --shadow: 0 28px 70px rgba(0, 0, 0, 0.28);
+    --winner-bg: rgba(209, 0, 0, 0.12);
+    --winner-border: rgba(209, 0, 0, 0.42);
+    --diff-bg: rgba(255, 255, 255, 0.06);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    font-family: "Rajdhani", Arial, sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(209, 0, 0, 0.20), transparent 30%),
+        linear-gradient(rgba(10, 10, 10, 0.38), rgba(8, 8, 8, 0.64)),
+        url("{% static 'cars/login-garage-bg.png' %}") center/cover no-repeat fixed;
+}
+
+a,
+button {
+    font-family: "Rajdhani", Arial, sans-serif;
+}
+
+.page-shell {
+    min-height: 100vh;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 26px;
+    background: rgba(12, 12, 12, 0.84);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.brand-mark {
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: clamp(20px, 2vw, 34px);
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
+
+.brand-subtitle {
+    font-size: 12px;
+    letter-spacing: 0.30em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.46);
+}
+
+.topbar-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0 20px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    color: white;
+    background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+    box-shadow: 0 16px 34px rgba(209, 0, 0, 0.22);
+}
+
+.btn-secondary {
+    color: white;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.content-shell {
+    width: min(1380px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 30px 0 40px;
+}
+
+.intro-panel {
+    margin-bottom: 22px;
+    padding: 24px 26px;
+    border-radius: 28px;
+    background: linear-gradient(180deg, rgba(20, 20, 20, 0.90), rgba(12, 12, 12, 0.82));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.eyebrow {
+    display: inline-flex;
+    width: fit-content;
+    margin-bottom: 14px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(209, 0, 0, 0.12);
+    color: #ffb6b6;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.page-title {
+    margin: 0 0 10px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: clamp(28px, 3vw, 40px);
+    line-height: 1.08;
+    text-transform: uppercase;
+}
+
+.page-copy {
+    margin: 0;
+    max-width: 760px;
+    font-size: 19px;
+    line-height: 1.45;
+    color: var(--muted);
+}
+
+.summary-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.summary-card {
+    padding: 18px 20px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(20, 20, 20, 0.92), rgba(12, 12, 12, 0.84));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.summary-card span {
+    display: block;
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.56);
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.summary-card strong {
+    display: block;
+    font-size: 28px;
+    line-height: 1;
+}
+
+.summary-card p {
+    margin: 8px 0 0;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+.compare-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 88px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.car-column {
+    padding: 20px;
+    border-radius: 28px;
+    background: linear-gradient(180deg, rgba(18, 18, 18, 0.94), rgba(12, 12, 12, 0.86));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.car-visual {
+    position: relative;
+    min-height: 270px;
+    overflow: hidden;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.20)),
+        rgba(0, 0, 0, 0.28);
+}
+
+.car-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.34));
+    pointer-events: none;
+}
+
+.car-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.car-body {
+    padding-top: 18px;
+}
+
+.car-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.meta-pill {
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.car-name {
+    margin: 0 0 8px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: clamp(28px, 2.4vw, 38px);
+    line-height: 1.06;
+    text-transform: uppercase;
+}
+
+.car-price {
+    margin: 0 0 18px;
+    color: #ffb6b6;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.insight-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.insight-card {
+    padding: 16px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.insight-card span {
+    display: block;
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.52);
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.highlight-list,
+.equipment-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.highlight-pill,
+.equipment-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.highlight-pill {
+    background: rgba(209, 0, 0, 0.12);
+    border: 1px solid rgba(209, 0, 0, 0.28);
+    color: #ffd3d3;
+}
+
+.equipment-chip {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.84);
+}
+
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.quick-stat {
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.quick-stat span {
+    display: block;
+    margin-bottom: 6px;
+    color: rgba(255, 255, 255, 0.54);
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.quick-stat strong {
+    display: block;
+    font-size: 22px;
+    line-height: 1.1;
+}
+
+.spec-section + .spec-section {
+    margin-top: 18px;
+}
+
+.section-heading {
+    margin: 0 0 10px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+}
+
+.spec-list {
+    display: grid;
+    gap: 10px;
+}
+
+.spec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 13px 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.spec-row--different {
+    background: var(--diff-bg);
+}
+
+.spec-row--winner {
+    background: var(--winner-bg);
+    border-color: var(--winner-border);
+    box-shadow: 0 0 0 1px rgba(209, 0, 0, 0.12);
+}
+
+.spec-label {
+    color: rgba(255, 255, 255, 0.64);
+    font-size: 15px;
+}
+
+.spec-value {
+    font-size: 18px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.vs-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+}
+
+.vs-badge {
+    width: 88px;
+    height: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(209, 0, 0, 0.22), rgba(12, 12, 12, 0.92));
+    border: 1px solid rgba(209, 0, 0, 0.30);
+    box-shadow: 0 0 42px rgba(209, 0, 0, 0.20);
+    color: #fff;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+}
+
+.empty-state {
+    padding: 34px;
+    border-radius: 28px;
+    background: linear-gradient(180deg, rgba(20, 20, 20, 0.92), rgba(10, 10, 10, 0.86));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.empty-state h2 {
+    margin: 0 0 12px;
+    font-family: "Orbitron", Arial, sans-serif;
+    font-size: clamp(26px, 3vw, 36px);
+    text-transform: uppercase;
+}
+
+.empty-state p {
+    margin: 0 0 22px;
+    max-width: 680px;
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+.empty-state .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 1180px) {
+    .summary-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .compare-stage {
+        grid-template-columns: 1fr;
+    }
+
+    .vs-column {
+        min-height: auto;
+    }
+
+    .vs-badge {
+        width: 72px;
+        height: 72px;
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 760px) {
+    .content-shell {
+        width: min(100%, calc(100% - 24px));
+        padding: 18px 0 26px;
+    }
+
+    .topbar {
+        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .quick-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-strip,
+    .insight-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .car-column,
+    .intro-panel,
+    .empty-state {
+        padding: 18px;
+        border-radius: 22px;
+    }
+
+    .car-visual {
+        min-height: 220px;
+        border-radius: 18px;
+    }
+
+    .spec-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .spec-value {
+        text-align: left;
+    }
+}
+</style>
+</head>
+<body>
+<div class="page-shell">
+    <header class="topbar">
+        <div class="brand-block">
+            <div class="brand-mark">RedLine Cars</div>
+            <div class="brand-subtitle">Performance Selection</div>
+        </div>
+        <div class="topbar-actions">
+            <a class="btn btn-secondary" href="{% url 'car_list' %}">Wroc do katalogu</a>
+            <a class="btn btn-primary" href="{% url 'home' %}">Strona glowna</a>
+        </div>
+    </header>
+
+    <main class="content-shell">
+        {% if left_car and right_car %}
+        <section class="intro-panel">
+            <div class="eyebrow">RedLine Compare</div>
+            <h1 class="page-title">Porownaj dwa auta i zobacz roznice od razu.</h1>
+            <p class="page-copy">
+                Zestawienie pokazuje przewagi, koszty i kluczowe roznice, zeby decyzja byla szybsza i bardziej profesjonalna.
+            </p>
+        </section>
+
+        <section class="summary-strip">
+            <article class="summary-card">
+                <span>Przewagi {{ left_car.brand }}</span>
+                <strong>{{ compare_summary.left_advantages }}</strong>
+                <p>Tyle parametrow wypada lepiej po lewej stronie.</p>
+            </article>
+            <article class="summary-card">
+                <span>Przewagi {{ right_car.brand }}</span>
+                <strong>{{ compare_summary.right_advantages }}</strong>
+                <p>Tyle parametrow wypada lepiej po prawej stronie.</p>
+            </article>
+            <article class="summary-card">
+                <span>Roznica ceny</span>
+                <strong>{{ compare_summary.price_gap }}</strong>
+                <p>Koszt 100 km: {{ compare_summary.cost_100_gap }}, rocznie: {{ compare_summary.yearly_cost_gap }}.</p>
+            </article>
+            <article class="summary-card">
+                <span>Aktywne roznice</span>
+                <strong>{{ compare_summary.differences_count }}</strong>
+                <p>Liczba pozycji, w ktorych auta realnie sie roznia.</p>
+            </article>
+        </section>
+
+        <section class="compare-stage">
+            <article class="car-column">
+                <div class="car-visual">
+                    <img src="{{ left_car.display_image_url }}" alt="{{ left_car.brand }} {{ left_car.model }}">
+                </div>
+                <div class="car-body">
+                    <div class="car-meta">
+                        <span class="meta-pill">{{ left_car.year }}</span>
+                        <span class="meta-pill">{{ left_car.get_fuel_type_display }}</span>
+                        <span class="meta-pill">{{ left_car.get_drive_display }}</span>
+                    </div>
+                    <h2 class="car-name">{{ left_car.brand }} {{ left_car.model }}</h2>
+                    <p class="car-price">{{ left_car.price }} zl</p>
+
+                    <div class="quick-stats">
+                        <div class="quick-stat">
+                            <span>Moc</span>
+                            <strong>{{ left_car.power }} KM</strong>
+                        </div>
+                        <div class="quick-stat">
+                            <span>0-100</span>
+                            <strong>{{ left_car.acceleration }} s</strong>
+                        </div>
+                        <div class="quick-stat">
+                            <span>Bagaznik</span>
+                            <strong>{{ left_car.trunk_capacity }} L</strong>
+                        </div>
+                    </div>
+
+                    <div class="insight-grid">
+                        <div class="insight-card">
+                            <span>Najmocniejsze strony</span>
+                            <div class="highlight-list">
+                                {% for item in compare_summary.left_highlights %}
+                                <span class="highlight-pill">{{ item }}</span>
+                                {% empty %}
+                                <span class="equipment-chip">Parametry bardzo zblizone</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="insight-card">
+                            <span>Wybrane wyposazenie ({{ compare_summary.left_equipment_count }})</span>
+                            <div class="equipment-chips">
+                                {% for item in left_car.featured_equipment_labels %}
+                                <span class="equipment-chip">{{ item }}</span>
+                                {% empty %}
+                                <span class="equipment-chip">Brak dodatkowych opcji</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% for section in comparison_sections %}
+                    <section class="spec-section">
+                        <h3 class="section-heading">{{ section.title }}</h3>
+                        <div class="spec-list">
+                            {% for row in section.rows %}
+                            <div class="spec-row spec-row--{{ row.left_state }}">
+                                <span class="spec-label">{{ row.label }}</span>
+                                <span class="spec-value">{{ row.left_display }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <div class="vs-column" aria-hidden="true">
+                <div class="vs-badge">VS</div>
+            </div>
+
+            <article class="car-column">
+                <div class="car-visual">
+                    <img src="{{ right_car.display_image_url }}" alt="{{ right_car.brand }} {{ right_car.model }}">
+                </div>
+                <div class="car-body">
+                    <div class="car-meta">
+                        <span class="meta-pill">{{ right_car.year }}</span>
+                        <span class="meta-pill">{{ right_car.get_fuel_type_display }}</span>
+                        <span class="meta-pill">{{ right_car.get_drive_display }}</span>
+                    </div>
+                    <h2 class="car-name">{{ right_car.brand }} {{ right_car.model }}</h2>
+                    <p class="car-price">{{ right_car.price }} zl</p>
+
+                    <div class="quick-stats">
+                        <div class="quick-stat">
+                            <span>Moc</span>
+                            <strong>{{ right_car.power }} KM</strong>
+                        </div>
+                        <div class="quick-stat">
+                            <span>0-100</span>
+                            <strong>{{ right_car.acceleration }} s</strong>
+                        </div>
+                        <div class="quick-stat">
+                            <span>Bagaznik</span>
+                            <strong>{{ right_car.trunk_capacity }} L</strong>
+                        </div>
+                    </div>
+
+                    <div class="insight-grid">
+                        <div class="insight-card">
+                            <span>Najmocniejsze strony</span>
+                            <div class="highlight-list">
+                                {% for item in compare_summary.right_highlights %}
+                                <span class="highlight-pill">{{ item }}</span>
+                                {% empty %}
+                                <span class="equipment-chip">Parametry bardzo zblizone</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="insight-card">
+                            <span>Wybrane wyposazenie ({{ compare_summary.right_equipment_count }})</span>
+                            <div class="equipment-chips">
+                                {% for item in right_car.featured_equipment_labels %}
+                                <span class="equipment-chip">{{ item }}</span>
+                                {% empty %}
+                                <span class="equipment-chip">Brak dodatkowych opcji</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% for section in comparison_sections %}
+                    <section class="spec-section">
+                        <h3 class="section-heading">{{ section.title }}</h3>
+                        <div class="spec-list">
+                            {% for row in section.rows %}
+                            <div class="spec-row spec-row--{{ row.right_state }}">
+                                <span class="spec-label">{{ row.label }}</span>
+                                <span class="spec-value">{{ row.right_display }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+                    {% endfor %}
+                </div>
+            </article>
+        </section>
+        {% else %}
+        <section class="empty-state">
+            <div class="eyebrow">RedLine Compare</div>
+            <h2>Wybierz dwa auta do porownania.</h2>
+            <p>
+                {% if compare_error %}
+                {{ compare_error }}
+                {% else %}
+                Zaznacz w katalogu dokladnie dwa samochody, a tutaj pokazemy je w profesjonalnym
+                ukladzie z podswietleniem roznic i centralnym pojedynkiem VS.
+                {% endif %}
+            </p>
+            <div class="btn-row">
+                <a class="btn btn-primary" href="{% url 'car_list' %}">Przejdz do katalogu</a>
+                <a class="btn btn-secondary" href="{% url 'home' %}">Wroc na strone glowna</a>
+            </div>
+        </section>
+        {% endif %}
+    </main>
+</div>
+</body>
+</html>
